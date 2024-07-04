@@ -65,5 +65,22 @@ def get_pizzas():
     return response
 
 
+@app.route('/restaurant_pizzas', methods=['POST'])
+def create_restaurant_pizza():
+    data = request.get_json()
+    if not data:
+        return make_response({"error": "Request body must be JSON"}, 400)
+    
+    restaurant_pizza = RestaurantPizza(**data)
+
+    db.session.add(restaurant_pizza)
+    db.session.commit()
+
+    response = make_response(restaurant_pizza.to_dict(), 201)
+    
+    return response
+
+
+
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

@@ -35,6 +35,26 @@ def get_restaurants():
     return response
 
 
+@app.route('/restaurants/<int:id>', methods=['GET', 'DELETE'])
+def restaurants_by_id(id):
+    restaurants = Restaurant.query.filter(Restaurant.id == id).first()
+    
+    if not restaurants:
+            return make_response({"error": "Restaurant not found"}, 404)
+    
+    else:
+        if request.method == 'GET':       
+            response = make_response(restaurants.to_dict(), 200)
+            return response
+        
+        elif request.method == 'DELETE':        
+            db.session.delete(restaurants)
+            db.session.commit()
+        
+            response = make_response({"message": "Restaurant {id} deleted"}, 200)
+            return response
+
+
 @app.route('/pizzas')
 def get_pizzas():
     pizzas = Pizza.query.all()

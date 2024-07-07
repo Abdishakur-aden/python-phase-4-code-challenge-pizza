@@ -44,7 +44,7 @@ def restaurants_by_id(id):
     
     else:
         if request.method == 'GET':       
-            response = make_response(restaurants.to_dict(), 200)
+            response = make_response(jsonify(restaurants.to_dict()), 200)
             return response
         
         elif request.method == 'DELETE':        

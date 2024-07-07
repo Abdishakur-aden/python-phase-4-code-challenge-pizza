@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from models import db, Restaurant, RestaurantPizza, Pizza
 from flask_migrate import Migrate
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 from flask_restful import Api, Resource
 import os
 
@@ -37,7 +37,7 @@ def get_restaurants():
 
 @app.route('/restaurants/<int:id>', methods=['GET', 'DELETE'])
 def restaurants_by_id(id):
-    restaurants = Restaurant.query.filter(Restaurant.id == id).first()
+    restaurants = Restaurant.query.filter_by(id=id).first()
     
     if not restaurants:
             return make_response({"error": "Restaurant not found"}, 404)
@@ -51,7 +51,7 @@ def restaurants_by_id(id):
             db.session.delete(restaurants)
             db.session.commit()
         
-            response = make_response({"message": "Restaurant {id} deleted"}, 200)
+            response = make_response('', 204)
             return response
 
 
@@ -67,11 +67,15 @@ def get_pizzas():
 
 @app.route('/restaurant_pizzas', methods=['POST'])
 def create_restaurant_pizza():
-    data = request.get_json()
-    if not data:
-        return make_response({"error": "Request body must be JSON"}, 400)
+    #data = request.get_json()
+    #if not data:
+     #   return make_response({"error": "Request body must be JSON"}, 400)
     
-    restaurant_pizza = RestaurantPizza(**data)
+    restaurant_pizza = RestaurantPizza(
+        price = request.get_json()['price'],
+        pizza_id = request.get_json()['pizza_id'],
+        restaurant_id = request.get_json()['restaurant_id']
+    )
 
     db.session.add(restaurant_pizza)
     db.session.commit()
